@@ -13,7 +13,7 @@ module controller(
   
   always @(*)
     begin
-      if (stall == 1'b1) begin
+      if (stall) begin
         aluSrc = 1'b0;
         memtoreg = 1'b0;
         regwrite = 1'b0;
@@ -23,7 +23,7 @@ module controller(
         Aluop = 2'b00;
       end else begin
         case (opcode)
-          7'b0000011: begin
+          `OP_L: begin // 7'b0000011
             aluSrc = 1'b1;
             memtoreg = 1'b1;
             regwrite = 1'b1;
@@ -32,7 +32,7 @@ module controller(
             branch = 1'b0;
             Aluop = 2'b00;
           end
-          7'b0100011: begin
+         `OP_S: begin // 7'b0100011
             aluSrc = 1'b1;
             memtoreg = 1'bx;
             regwrite = 1'b0;
@@ -41,7 +41,7 @@ module controller(
             branch = 1'b0;
             Aluop = 2'b00;
           end
-          7'b0110011: begin
+          `OP_R: begin // 7'b0110011
             aluSrc = 1'b0;
             memtoreg = 1'b0;
             regwrite = 1'b1;
@@ -50,7 +50,7 @@ module controller(
             branch = 1'b0;
             Aluop = 2'b10;
           end
-          7'b1100011: begin
+          `OP_B: begin // 7'b1100011
             aluSrc = 1'b0;
             memtoreg = 1'bx;
             regwrite = 1'b0;
@@ -59,7 +59,7 @@ module controller(
             branch = 1'b1;
             Aluop = 2'b01;
           end
-          7'b0010011: begin
+          `OP_I: begin // 7'b0010011
             aluSrc = 1'b1;
             memtoreg = 1'b0;
             regwrite = 1'b1;
