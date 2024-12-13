@@ -8,6 +8,10 @@
 `define OP_L     0000011
 `define OP_S     0100011
 
+// Boolean
+`define TRUE 1
+`define FALSE 0
+
 // RV32I Instruction func3 Encodings
 
 // Integer Register-Immediate Instructions
@@ -19,17 +23,17 @@
 `define ANDI_func3   111 // Bitwise AND immediate
 `define SLLI_func3   001 // Shift left logical immediate
 `define SRLI_func3   101 // Shift right logical immediate (unsigned)
-`define SRAI_func3   101 // Shift right arithmetic immediate (overloaded by funct7)
+// `define SRAI_func3   101 // Shift right arithmetic immediate (overloaded by funct7)
 
 // Integer Register-Register Instructions
 `define ADD_func3    000 // Add
-`define SUB_func3    000 // Subtract (overloaded by funct7)
+// `define SUB_func3    000 // Subtract (overloaded by funct7)
 `define SLL_func3    001 // Shift left logical
 `define SLT_func3    010 // Set less than
 `define SLTU_func3   011 // Set less than unsigned
 `define XOR_func3    100 // Bitwise XOR
 `define SRL_func3    101 // Shift right logical
-`define SRA_func3    101 // Shift right arithmetic (overloaded by funct7)
+// `define SRA_func3    101 // Shift right arithmetic (overloaded by funct7)
 `define OR_func3     110 // Bitwise OR
 `define AND_func3    111 // Bitwise AND
 
@@ -53,6 +57,13 @@
 `define SH_func3     001 // Store halfword
 `define SW_func3     010 // Store word
 
-// Boolean
-`define TRUE 1
-`define FALSE 0
+
+// RV32I Instruction func7 Encodings
+
+// Logic & Arithematic 
+`define LOGIC    0000000 // logical
+`define ARITH     0100000 // arithmetic 
+
+// ADD & SUB 
+`define ADD    0000000 // logical
+`define SUB     0100000 // arithmetic 
