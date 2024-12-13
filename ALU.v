@@ -2,10 +2,11 @@
 module ALU (
     input [6:0] opcode,
     input [2:0] func3,
-    input [6:0]func7,
+    input [6:0] func7,
     input [31:0] operand1,
     input [31:0] operand2,
-    output reg [31:0] alu_out
+    output reg [31:0] alu_out,
+    output reg zero
 );
     always @(*)
     begin
@@ -21,8 +22,11 @@ module ALU (
                     `SLLI_func3:alu_out = operand1 << operand2[4:0];
                     `SRLI_func3:begin
                         case (func7)
-                        7'b0000000:alu_out = operand1 >> operand2[4:0];
-                        7'b0100000:alu_out = $signed(operand1) >>> operand2[4:0];
+                        `LOGIC:alu_out = operand1 >> operand2[4:0];
+                        `ARITH:alu_out = $signed(operand1) >>> operand2[4:0];
+                        default:begin  
+                            alu_out=32'b0;
+                        end                          
                         endcase
                     end
                     default:begin  
@@ -34,9 +38,12 @@ module ALU (
                 case (func3)
                     `ADD_func3:begin
                         case (func7)
-                            7'b0000000:alu_out = operand1 + operand2;
-                            7'b0100000:alu_out = operand1 - operand2;
-                        endcase
+                            `ADD:alu_out = operand1 + operand2;
+                            `SUB:alu_out = operand1 - operand2;
+                        default:begin  
+                            alu_out=32'b0;
+                        end                             
+                        endcase                         
                         end
                     `SLL_func3:alu_out = operand1 << operand2[4:0];
                     `SLT_func3:alu_out = ($signed(operand1) < $signed(operand2))?32'b1:32'b0;
@@ -44,8 +51,11 @@ module ALU (
                     `XOR_func3:alu_out = operand1 ^ operand2;
                     `SRL_func3:begin
                         case (func7)
-                        7'b0000000:alu_out = operand1 >> operand2[4:0];
-                        7'b0100000:alu_out = $signed(operand1) >>> operand2[4:0];
+                        `LOGIC:alu_out = operand1 >> operand2[4:0];
+                        `ARITH:alu_out = $signed(operand1) >>> operand2[4:0];
+                        default:begin  
+                            alu_out=32'b0;
+                        end                        
                         endcase
                     end
                     `OR_func3:alu_out = operand1 | operand2;
@@ -98,5 +108,10 @@ module ALU (
                 alu_out=32'b0;
             end
         endcase
+    end
+
+    always@(*)begin
+        if (alu_out == 32'b0) zero = 1'b1;
+        else zero = 1'b0;
     end
 endmodule

@@ -14,7 +14,7 @@ module registerFile(
 //  output [63:0] r21,
 //  output [63:0] r22
 );
-  integer i;
+  // integer i;
   reg [31:0] registers [31:0];
 
 //  assign r8 = registers[8];

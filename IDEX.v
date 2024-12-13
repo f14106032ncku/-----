@@ -1,53 +1,50 @@
 module IDEX(
-  input clk,reset,
-//  input [3:0] funct4_in,//funct4 of instruction from instruction memory
-  input [31:0] pc_ID,//adder input, ouput of IFID carried forward
-  input WB_ID,M_ID,EX_ID,
-  input [31:0] rdata1_ID, //from regwrite
-  input [31:0] rdata2_ID,//from regwrite
-  input [31:0] imme_ID,//from data extractor
+  input clk,rst,
+  input [6:0] opcode_ID,// opcode from instruction mem
+  input [2:0] fun3_ID,// fun3 from instruction mem
+  input [6:0] fun7_ID,// fun7 from instruction mem
+  input [31:0] pc_ID,//adder input, ouput of IFID carried forward_EX
+  input [31:0] readdata1_ID, //from regwrite_EX
+  input [31:0] readdata2_ID,//from regwrite_EX
+  input [31:0] imm_data_ID,//from data extractor
   input [4:0] rs1_ID,//from instruction parser
   input [4:0] rs2_ID, //from instruction parser
   input [4:0] rd_ID, //from instruction parser
-  input branch_ID,
-//  input branch_in,memread_in,memtoreg_in,memwrite_in,aluSrc_in,regwrite_in, //from control unit
-//  input [1:0] Aluop_in,
+  input branch_ID,memread_ID,memtoreg_ID,memwrite_ID,alusrc_ID,regwrite_ID, //from control unit
   input flush, 
   output reg [31:0] pc_EX,
-  output reg WB_EX,M_EX,
   output reg [4:0] rs1_EX,
   output reg [4:0] rs2_EX,
   output reg [4:0] rd_EX,
-  output reg [31:0] imme_EX,
-  output reg [31:0] rdata1_EX, //2bit mux
-  output reg [31:0] rdata2_EX, //2bit mux
-  output reg branch_EX
-//  output reg [3:0] funct4_out,
-//  output reg Branch,Memread,Memtoreg, Memwrite, Regwrite,Alusrc, 
-//  output reg [1:0] aluop
+  output reg [31:0] imm_data_EX,
+  output reg [31:0] readdata1_EX, //2bit mux
+  output reg [31:0] readdata2_EX, //2bit mux
+  output reg [6:0] opcode_EX,
+  output reg [2:0] fun3_EX,
+  output reg [6:0] fun7_EX,
+  output reg branch_EX,memread_EX,memtoreg_EX, memwrite_EX, regwrite_EX,alusrc_EX
 );
   
   always @ (posedge clk)
     begin
-      if (reset == 1'b1 || flush == 1'b1)
+      if (rst || flush)
         begin
-          pc_EX <= 32'b0;
+          pc_EX <= 31'b0;
           rs1_EX <= 5'b0;
           rs2_EX <= 5'b0;
           rd_EX <= 5'b0;
-          imme_EX <= 32'b0;
-          rdata1_EX <= 64'b0;
-          rdata2_EX <= 64'b0;
-//          funct4_out = 4'b0;
+          imm_data_EX <= 31'b0;
+          readdata1_EX <= 31'b0;
+          readdata2_EX <= 31'b0;
+          opcode_EX <= 7'b0;
+          fun3_EX <= 4'b0;    
+          fun7_EX <= 7'b0;                 
           branch_EX <= 1'b0;
-//          Memread = 1'b0;
-//          Memtoreg =1'b0;
-//          Memwrite = 1'b0;
-//          Regwrite = 1'b0;
-//          Alusrc = 1'b0;
-//          aluop = 2'b0;
-	  WB_EX <= 1'b0;
-	  M_EX <= 1'b0;
+          memread_EX <= 1'b0;
+          memtoreg_EX <=1'b0;
+          memwrite_EX <= 1'b0;
+          regwrite_EX <= 1'b0;
+          alusrc_EX <= 1'b0;
         end
       else
         begin
@@ -55,19 +52,18 @@ module IDEX(
           rs1_EX <= rs1_ID;
           rs2_EX <= rs2_ID;
           rd_EX <= rd_ID;
-          imme_EX <= imme_ID;
-          rdata1_EX <= rdata1_ID;
-          rdata2_EX <= rdata2_ID;
-//          funct4_out = funct4_in; //when connecting in top module Funct4 is wire containing this section of 31 bit instruction {instruction[30],instruction[14:12]}
+          imm_data_EX <= imm_data_ID;
+          readdata1_EX <= readdata1_ID;
+          readdata2_EX <= readdata2_ID;
+          opcode_EX <= opcode_ID;
+          fun3_EX <= fun3_ID;    
+          fun7_EX <= fun7_ID;            
           branch_EX <= branch_ID;
-//          Memread = memread_in;
-//          Memtoreg = memtoreg_in;
-//          Memwrite = memwrite_in;
-//          Regwrite = regwrite_in;
-//          Alusrc = aluSrc_in;
-//          aluop = Aluop_in;
-	  WB_EX <= WB_ID;
-	  M_EX <= M_ID;        
+          memread_EX <= memread_ID;
+          memtoreg_EX <= memtoreg_ID;
+          memwrite_EX <= memwrite_ID;
+          regwrite_EX <= regwrite_ID;
+          alusrc_EX <= alusrc_ID;     
         end
     end
 endmodule

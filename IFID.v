@@ -1,24 +1,24 @@
 module IFID(
     input clk,
     input rst,
-    input [31:0] ir,
+    input [31:0] ir_IF,
     input [31:0] pc_IF, 
     input flush, 
-    input hazard_ifid, 
-    output reg [31:0] ir_out,//instruction out,
+    input hazard_ifid, // stall when hazard
+    output reg [31:0] ir_ID,
     output reg [31:0] pc_ID
   );
   always @(posedge clk) begin
-      if (rst == 1'b1 || flush == 1'b1) begin
-          ir_out  <= 32'b0;
+      if (rst || flush) begin
+          ir_ID  <= 32'b0;
           pc_ID <= 32'b0;
       end
-      else if (hazard_ifid) begin
-          ir_out <= ir_out;
+      else if (hazard_ifid) begin // stall when hazard
+          ir_ID <= ir_ID;
           pc_ID <= pc_ID;
       end 
 	  else begin
-          ir_out <= ir;
+          ir_ID <= ir_IF;
           pc_ID <= pc_IF;
       end
     end
