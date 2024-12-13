@@ -1,13 +1,11 @@
 ## 架構圖
 
 ![image](https://github.com/f14106032ncku/CPU_vsd_2024/blob/main/architecture_ref.png)
+* 不同的地方
+  刪除ALU_controll(ALU控制訊號直接送opcode, fun3, fun7)
+  刪除pipeline_flush(flush跟branch一樣)
 
-## 控制訊號
-* npl控制
-![image](https://github.com/f14106032ncku/CPU_vsd_2024/blob/main/ctrl_signal_ref.png)
-
-## 缺少的block
-* TOP
+## 剩下TOP.v
 
 ---
 
