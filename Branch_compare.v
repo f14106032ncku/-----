@@ -1,3 +1,4 @@
+`include "const.svh"
 module Branch_compare (
     input [31:0] operand1, // First operand
     input [31:0] operand2, // Second operand
@@ -14,12 +15,12 @@ module Branch_compare (
     wire bgeu_taken = (operand1 >= operand2); // BGEU (Branch if Greater Than or Equal, unsigned)
 
     // Assign branch_taken based on func3
-    assign branch_taken = (func3 == 3'b000) ? beq_taken :
-                          (func3 == 3'b001) ? bne_taken :
-                          (func3 == 3'b100) ? blt_taken :
-                          (func3 == 3'b101) ? bge_taken :
-                          (func3 == 3'b110) ? bltu_taken :
-                          (func3 == 3'b111) ? bgeu_taken :
+    assign branch_taken = (func3 == `BEQ_func3) ? beq_taken :
+                          (func3 == `BNE_func3) ? bne_taken :
+                          (func3 == `BLT_func3) ? blt_taken :
+                          (func3 == `BGE_func3) ? bge_taken :
+                          (func3 == `BLTU_func3) ? bltu_taken :
+                          (func3 == `BGEU_func3) ? bgeu_taken :
                           1'b0; // Default case for undefined func3
 
 endmodule
