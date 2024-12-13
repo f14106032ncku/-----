@@ -1,29 +1,32 @@
 module MEMWB(
   input clk,rst,
-  input [31:0] mem_rdata,
-  input [31:0] result_alu_in, 
-  input [4:0] Rd_in,                //EX MEM output
-  input memtoreg_in, regwrite_in ,   //ex mem output as mem wb inputs
-  output reg [31:0] mem_rdata_out, 
-  output reg [31:0] result_alu_out,
-  output reg [4:0] rd,
-  output reg Memtoreg, Regwrite
+  input [31:0] readdata_MEM,
+  input [31:0] alu_MEM, 
+  input [4:0] rd_MEM, 
+  input memtoreg_MEM, regwrite_MEM, 
+  output reg [31:0] readdata_WB, 
+  output reg [31:0] alu_WB,
+  output reg [4:0] rd_WB,
+  output reg memtoreg_WB, regwrite_WB
 );
   
-  always @(posedge clk) begin
-      if (rst == 1'b1)begin
-          mem_rdata_out <= 31'b0;
-          result_alu_out <= 31'b0;
-          rd <= 5'b0;
-          Memtoreg <= 1'b0;
-          Regwrite <= 1'b0;  
-      end
-      else begin
-          mem_rdata_out <= mem_rdata;
-          result_alu_out <= result_alu_in;
-          rd <= Rd_in;
-          Memtoreg <= memtoreg_in;
-          Regwrite <= regwrite_in;
+  always @(posedge clk)
+    begin
+      if (rst)
+        begin
+          readdata_WB <= 32'b0;
+          alu_WB <= 32'b0;
+          rd_WB <= 5'b0;
+          memtoreg_WB <= 1'b0;
+          regwrite_WB <= 1'b0;
+        end
+      else
+        begin
+          readdata_WB <= readdata_MEM;
+          alu_WB <= alu_MEM;
+          rd_WB <= rd_MEM;
+          memtoreg_WB <= memtoreg_MEM;
+          regwrite_WB <= regwrite_MEM;
         end
     end
 endmodule
