@@ -1,6 +1,6 @@
           
 module EXMEM(
-  input clk,reset,
+  input clk,rst,
   input [31:0] pc_branch_EX, //pc branch input
   input [31:0] alu_EX,//64bit alu output
   input zero_EX,//64bit alu output
@@ -19,7 +19,7 @@ module EXMEM(
   
   always @ (posedge clk)
     begin
-      if (reset || flush)
+      if (rst || flush)
         begin
           pc_branch_MEM <= 32'b0;
           zero_MEM <= 1'b0;
