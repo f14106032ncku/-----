@@ -1,6 +1,6 @@
 ## 架構圖
 
-![image](https://github.com/f14106032ncku/CPU_vsd_2024/blob/main/arhitecture_ref.png)
+![image](https://github.com/f14106032ncku/CPU_vsd_2024/blob/main/architecture_ref.png)
 
 ## 缺少的block
 * Forwarding unit
