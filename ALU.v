@@ -6,7 +6,7 @@ module ALU (
     input [31:0] operand1,
     input [31:0] operand2,
     output reg [31:0] alu_out,
-    output reg zero
+    output zero
 );
     always @(*)
     begin
@@ -109,9 +109,5 @@ module ALU (
             end
         endcase
     end
-
-    always@(*)begin
-        if (alu_out == 32'b0) zero = 1'b1;
-        else zero = 1'b0;
-    end
+   assign zero = (alu_out == 32'b0) ? 1'b1 : 1'b0;
 endmodule

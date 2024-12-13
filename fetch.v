@@ -4,8 +4,8 @@
 `include "memory.v"
 
 
-module fetch (clk, rst, ,pc_en, wb, pc_addr , pc_out , ir_out);
-	input clk,rst,pc_en,wb;
+module fetch (clk, rst, ,stall, wb, pc_addr , pc_out , ir_out);
+	input clk,rst,stall,wb;
 	input [31:0] pc_addr;
 	output [31:0] pc_out,ir_out;
 	
@@ -14,7 +14,7 @@ module fetch (clk, rst, ,pc_en, wb, pc_addr , pc_out , ir_out);
 pc pc(
     .clk(clk),
     .rst(rst),
-    .pc_en(pc_en),
+    .stall(stall),
     .pc_in(pc_in),
     .pc_out(pc_out)
     );
