@@ -2,8 +2,8 @@
 module EXMEM(
   input clk,rst,
   input [31:0] pc_branch_EX, //pc branch input
-  input [31:0] alu_EX,//64bit alu output
-  input zero_EX,//64bit alu output
+  input [31:0] alu_out,//64bit alu output
+  input non_operation,//64bit alu output
   input [31:0] writedata_EX, //2 bit mux2by1 output
   input [4:0] rd_EX, //IDEX output
   input branch_EX,memread_EX,memtoreg_EX,memwrite_EX,regwrite_EX, //IDEXX outputs
@@ -36,8 +36,8 @@ module EXMEM(
       else
         begin
           pc_branch_MEM <= pc_branch_EX;
-          zero_MEM <= zero_EX;
-          alu_MEM <= alu_EX;
+          zero_MEM <= non_operation;
+          alu_MEM <= alu_out;
           writedata_MEM <= writedata_EX;
           rd_MEM <= rd_EX;
           branch_MEM <= branch_EX;
