@@ -30,7 +30,7 @@ module RISC_V(
 wire [31:0] ir_out, pc_out;
 
 // IFID 模組訊號
-wire [31:0] inst_ifid_out, addrout1;
+wire [31:0] ir_ID, addrout1;
 
 // Decoder 模組訊號
 wire [4:0] rs1, rs2, rd;
@@ -114,13 +114,13 @@ wire stall;
     .pc_IF(pc_out),          
     .flush(flush),                
     .hazard_ifid(stall),          
-    .ir_ID(inst_ifid_out),   
+    .ir_ID(ir_ID),   
     .pc_ID(addrout1)        
 );
   
   
  Decoder Decoder (
-    .ir(inst_ifid_out),      
+    .ir(ir_ID),      
     .rs1(rs1),               
     .rs2(rs2),               
     .rd(rd),                 
@@ -143,7 +143,7 @@ registerFile regfile (
  
  
 imm imm (
-    .ir(inst_ifid_out),      
+    .ir(ir_ID),      
     .imme(imm_data)          
 );
 
@@ -312,11 +312,9 @@ Forward Forward(
 );
     
 Hazard Hazard( 
-    .MEMr_IDEX(memread_EX),  
-    .ir(inst_ifid_out),     
-    .rd_IDEX(rd_EX),        
-    .rs1_IFID(rs1),          
-    .rs2_IFID(rs2),          
+    .memread_EX(memread_EX),  
+    .ir_ID(ir_ID),     
+    .rd_IDEX(rd_EX),                  
     .stall(stall)            
 );	
 
