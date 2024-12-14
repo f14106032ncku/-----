@@ -313,10 +313,12 @@ Forward Forward(
 );
     
 Hazard Hazard( 
-    .MEMr_IDEX(), 
-    .ir(), 
-    .rd_IDEX(), 
-    .stall(stall) 
+    .MEMr_IDEX(memread_EX),  
+    .ir(inst_ifid_out),     
+    .rd_IDEX(rd_EX),        
+    .rs1_IFID(rs1),          
+    .rs2_IFID(rs2),          
+    .stall(stall)            
 );	
 
 endmodule 
