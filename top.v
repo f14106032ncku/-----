@@ -21,359 +21,302 @@
 
 module RISC_V(
   input clk,
-  input reset,
-  input wire[63:0] element1,
-  input wire[63:0] element2,
-  input wire[63:0] element3,
-  input wire[63:0] element4,
-  input wire[63:0] element5,
-  input wire[63:0] element6,
-  input wire[63:0] element7,
-  input wire[63:0] element8,
-  input stall, flush);
+  input rst,
+  );
   
-  // CU wires
-  wire branch;
-  wire memread;
-  wire memtoreg;
-  wire memwrite;
-  wire ALUsrc;
-  wire regwrite;
-  wire [1:0] ALUop;
-  
-  //regfile
-  wire regwrite_memwb_out;
-  wire [63:0] readdata1, readdata2;
-  wire [63:0] r8, r19, r20, r21, r22;
-  wire [63:0] write_data;
-  
-   //PC wires
-  wire [63:0] pc_in;
-  wire [63:0] pc_out;
-  
-  // adders
-  wire [63:0] adderout1;
-  wire [63:0] adderout2;
-  
-  // inst mem wire
-  wire [31:0] instruction;
-  wire[31:0] inst_ifid_out;
-  
-  //Parser
-  wire [6:0] opcode;
-  wire [4:0] rd, rs1, rs2;
-  wire [2:0] funct3;
-  wire [6:0] funct7;
-  
-  
-  // Immediate Data Extractor
-  wire [63:0] imm_data;
-  
-  //ifid wires
+// ========================
+// 定義模組間的連接訊號
+// ========================
+// Fetch 模組訊號
+wire [31:0] ir_out, pc_out;
+
+// IFID 模組訊號
+wire [31:0] inst_ifid_out, addrout1;
+
+// Decoder 模組訊號
+wire [4:0] rs1, rs2, rd;
+wire [6:0] opcode, funct7;
+wire [2:0] funct3;
+
+// Register File 和 imm模組訊號
+wire [31:0] rdata1, rdata2, imm_data;
+
+// IDEX 模組訊號
+wire [31:0] addrout2,addrout3;
+wire [4:0] rs1_EX;
+wire [4:0] rs2_EX;
+wire [4:0] rd_EX;
+wire [31:0] imm_data_EX;
+wire [31:0] rdata1_EX;
+wire [31:0] rdata2_EX;
+wire [6:0] opcode_EX;
+wire [2:0] fun3_EX;
+wire [6:0] fun7_EX;
+wire branch_EX,memread_EX,memtoreg_EX, memwrite_EX, regwrite_EX,alusrc_EX;
+
+// ALU 模組訊號
+wire [31:0] AluResult;
+wire non_operation;
+wire [31:0] M1,M2,alu_b;
+
+// EXMEM 模組訊號
+wire [31:0] pc_branch_MEM;
+wire zero_MEM;
+wire [31:0] alu_MEM;
+wire [31:0] writedata_MEM;
+wire [4:0] rd_MEM;
+wire branch_MEM,memread_MEM,memtoreg_MEM, memwrite_MEM, regwrite_MEM;
+wire branch_taken_MEM;
+
+// MEMWB 模組訊號
+wire [31:0] readdata_WB; 
+wire [31:0] alu_WB;
+wire [4:0] rd_WB;
+wire memtoreg_WB, regwrite_WB;
+
+//mem 模組訊號
+wire [31:0] Read_data;
+
+// FORWORD 模組訊號
+wire [1:0] Forward_A;
+wire [1:0] Forward_B;
+
+// 控制訊號
+wire branch_final;
+wire Branch, Memread, Memtoreg, Memwrite, Alusrc, Regwrite;  
+wire [1:0] Aluop;
+wire flush;
+
+assign flush =branch_taken_MEM &non_operation ;
+
+// WB 模組訊號
+
+wire [31:0] wb_data;
+
+//Hazard 模組訊號
+wire stall;
+
  
-  wire [63:0] random;
-  
-  //id ex wires
- 
-  wire [63:0] a1;
-  wire [4:0] RS1;
-  wire [4:0] RS2;
-  wire [4:0] RD;
-  wire [63:0] d, M1, M2;
-  wire Branch;
-  wire Memread;
-  wire Memtoreg;
-  wire Memwrite;
-  wire Regwrite;
-  wire Alusrc;
-  wire [1:0] aluop;
-  wire [3:0] funct4_out;
-  
-  //mux wires
-  wire [63:0] threeby1_out1;
-  wire[63:0] threeby1_out2;
-  wire[63:0]  alu_64_b;
-  
-   //ex mem wires
-  wire [63:0] write_Data;
-  wire [63:0] exmem_out_adder;
-  wire exmem_out_zero;
-  wire [63:0] exmem_out_result;
-  wire [4:0] exmemrd;
-  wire BRANCH,MEMREAD,MEMTOREG,MEMEWRITE,REGWRITE;   
-  
-   // ALU 64
-  wire [63:0] AluResult;
-  wire zero;
-  
-  
-  // ALU Control
-  wire [3:0] operation;
-  
-  // Data Memory
-  wire [63:0] readdata;
- 
-  
-  
-  
-  //memwb wires
-  wire[63:0] muxin1,muxin2;
-  wire [4:0] memwbrd;
-  wire memwb_memtoreg;
-  wire memwb_regwrite;
-  
-  //forwarding unit wires
-  wire [1:0] forwardA;
-  wire [1:0] forwardB;
-  
-  // Branch
-  wire addermuxselect;
-  wire branch_final;
-  
-  
   fetch fecth (
     .clk(clk),
     .rst(rst),
-    .stall(),
-    .wb(),
-    .pc_addr(),
-	.ir_out(),
-	.pc_out()
+    .stall(stall),
+    .wb(flush),
+    .pc_addr(pc_branch_EX),//???
+	.ir_out(ir_out),
+	.pc_out(pc_out)
   );
   
- 
-  
-IFID IFID(
-    .clk(),
-    .rst(),
-    .ir_IF(),
-    .pc_IF(), 
-    .flush(), 
-    .hazard_ifid(), // stall when hazard
-    .ir_ID(),
-    .pc_ID()
-  );
-  
-Decoder Decoder(
-	  .ir(),
-	  .rs1(),
-	  .rs2(),
-	  .rd(),
-	  .opcode(),
-	  .fun3(),
-	  .fun7()
-  );  
- 
-  registerFile regfile 
-  (
+//---------------------------------------------IFID 
+  IFID IFID (
     .clk(clk),
-    .rs1(rs1),
-    .rs2(rs2),
-    .rd(),
-    .wdata(),
-	.wen(),
-    .rdata1(),
-    .rdata2()
-  );
+    .rst(rst),
+    .ir_IF(ir_out),          
+    .pc_IF(pc_out),          
+    .flush(flush),                
+    .hazard_ifid(stall),          
+    .ir_ID(inst_ifid_out),   
+    .pc_ID(addrout1)        
+);
   
-imm imm(
-  .ir(),
-  .imme()
-  );
   
-IDEX IDEX(
-  .clk(),
-  .rst(),
-  .opcode_ID(),
-  .fun3_ID(),
-  .fun7_ID(),
-  .pc_ID(),
-  .readdata1_ID(), 
-  .readdata2_ID(),
-  .imm_data_ID(),
-  .rs1_ID(),
-  .rs2_ID(),
-  .rd_ID(), 
-  .branch_ID(),
-  .memread_ID(),
-  .memtoreg_ID(),
-  .memwrite_ID(),
-  .alusrc_ID(),
-  .regwrite_ID(), 
-  .flush(), 
-  .pc_EX(),
-  .rs1_EX(),
-  .rs2_EX(),
-  .rd_EX(),
-  .imm_data_EX(),
-  .readdata1_EX(), 
-  .readdata2_EX(), 
-  .opcode_EX(),
-  .fun3_EX(),
-  .fun7_EX(),
-  .branch_EX(),
-  .memread_EX(),
-  .memtoreg_EX(), 
-  .memwrite_EX(), 
-  .regwrite_EX(),
-  .alusrc_EX()
+ Decoder Decoder (
+    .ir(inst_ifid_out),      
+    .rs1(rs1),               
+    .rs2(rs2),               
+    .rd(rd),                 
+    .opcode(opcode),         
+    .fun3(funct3),           
+    .fun7(funct7)            
+);
+ 
+  
+registerFile regfile (
+    .clk(clk),
+    .rs1(rs1),                
+    .rs2(rs2),                
+    .rd(rd_WB),             
+    .wdata(wb_data),            
+    .wen(regwrite_WB),     
+    .rdata1(rdata1),          
+    .rdata2(rdata2)           
+); 
+ 
+ 
+imm imm (
+    .ir(inst_ifid_out),      
+    .imme(imm_data)          
+);
+
+
+//---------------------------------------------IDEX
+  
+IDEX IDEX (
+    .clk(clk),
+    .rst(rst),
+    .opcode_ID(opcode),       
+    .fun3_ID(funct3),         
+    .fun7_ID(funct7),         
+    .pc_ID(adderout1),        
+    .readdata1_ID(rdata1),    
+    .readdata2_ID(rdata2),    
+    .imm_data_ID(imm_data),   
+    .rs1_ID(rs1),             
+    .rs2_ID(rs2),             
+    .rd_ID(rd),               
+    .branch_ID(Branch),       
+    .memread_ID(Memread),     
+    .memtoreg_ID(Memtoreg),   
+    .memwrite_ID(Memwrite),   
+    .alusrc_ID(Alusrc),       
+    .regwrite_ID(Regwrite),   
+    .flush(flush),     
+    .pc_EX(addrout2),        
+    .rs1_EX(rs1_EX),              
+    .rs2_EX(rs2_EX),              
+    .rd_EX(rd_EX),               
+    .imm_data_EX(imm_data_EX),          
+    .readdata1_EX(readdata1_EX),        
+    .readdata2_EX(readdata2_EX),
+    .opcode_EX(opcode_EX),             
+    .fun3_EX(fun3_EX),               
+    .fun7_EX(fun7_EX),               
+    .branch_EX(branch_EX),             
+    .memread_EX(memread_EX),            
+    .memtoreg_EX(memtoreg_EX),           
+    .memwrite_EX(memwrite_EX),           
+    .regwrite_EX(regwrite_EX),           
+    .alusrc_EX(alusrc_EX)              
 );
 
  mux_3to1 mux1(
-    .in_0(),
-    .in_1(),
-	.in_2(),
-    .sel(),
-    .out()
+    .in_0(readdata1_EX),
+    .in_1(wb_data),
+	.in_2(alu_MEM),
+    .sel(Forward_A),
+    .out(M1)
     );
 	
 	mux_3to1 mux2(
-    .in_0(),
-    .in_1(),
-	.in_2(),
-    .sel(),
-    .out()
+    .in_0(readdata2_EX),
+    .in_1(wb_data),
+	.in_2(alu_MEM),
+    .sel(Forward_B),
+    .out(M2)
     );
 	
 	mux_2to1 mux3(
-    .in_0(),
-    .in_1(),
-    .sel(),
-    .out()
+    .in_0(M2),
+    .in_1(imm_data_EX),
+    .sel(Alusrc),
+    .out(alu_b)
     );
 	
 adder add1(
-    .a(),
-    .b(),
-    .sum()
+    .a(addrout2),
+    .b(imm_data_EX<<1),
+    .sum(addrout3)
     );
  
 ALU ALU(
-    .opcode(),
-    .func3(),
-    .func7(),
-    .operand1(),
-    .operand2(),
-    .alu_out(),
-    .zero()
+    .opcode(Aluop),
+    .func3(fun3_EX),
+    .func7(fun7_EX),
+    .operand1(M1),
+    .operand2(alu_b),
+    .alu_out(AluResult),
+    .non_operation(non_operation)
 ); 
 
-          
+//---------------------------------------------EXMEM                       
 EXMEM EXMEM(
-  .clk(),
-  .rst(),
-  .pc_branch_EX(), 
-  .alu_EX(),
-  .zero_EX(),
-  .writedata_EX(),
-  .rd_EX(), 
-  .branch_EX(),
-  .memread_EX(),
-  .memtoreg_EX(),
-  .memwrite_EX(),
-  .regwrite_EX(),
-  .flush(), 
+  .clk(clk),
+  .rst(rst),
+  .pc_branch_EX(pc_branch_EX), 
+  .alu_EX(AluResult),
+  .zero_EX(non_operation),
+  .writedata_EX(M2),
+  .rd_EX(rd_EX), 
+  .branch_EX(branch_EX),
+  .memread_EX(memread_EX),
+  .memtoreg_EX(memtoreg_EX),
+  .memwrite_EX(memwrite_EX),
+  .regwrite_EX(regwrite_EX),
+  .flush(flush), 
   .branch_taken_EX(),
-  .pc_branch_MEM(),
-  .zero_MEM(),
-  .alu_MEM(),
-  .writedata_MEM(),
-  .rd_MEM(),
-  .branch_MEM(),
-  .memread_MEM(),
-  .memtoreg_MEM(),
-  .memwrite_MEM(), 
-  .regwrite_MEM(),
-  .branch_taken_MEM()
+  .pc_branch_MEM(pc_branch_MEM),
+  .zero_MEM(zero_MEM),
+  .alu_MEM(alu_MEM),
+  .writedata_MEM(writedata_MEM),
+  .rd_MEM(rd_MEM),
+  .branch_MEM(branch_MEM),
+  .memread_MEM(memread_MEM),
+  .memtoreg_MEM(memtoreg_MEM),
+  .memwrite_MEM(memwrite_MEM), 
+  .regwrite_MEM(regwrite_MEM),
+  .branch_taken_MEM(branch_taken_MEM)
   );
   
-  SRAM data_mem(
+  mem data_mem(
 	.clk(clk),
-    .wen(),
-    .addr(),
-	.wdata(),
-    .rdata()
+    .wen(memread_MEM),
+    .addr(alu_MEM),
+	.wdata(writedata_MEM),
+    .rdata(Read_data)
     );
- 
-/*    
-  data_memory datamem
-  (
-    .write_data(write_Data),
-    .address(exmem_out_result),
-    .memorywrite(MEMEWRITE),
-    .clk(clk),
-    .memoryread(MEMREAD),
-    .read_data(readdata),
-    .element1(element1),
-    .element2(element2),
-    .element3(element3),
-    .element4(element4),
-    .element5(element5),
-    .element6(element6),
-    .element7(element7),
-    .element8(element8)
-  );
-*/  
-  
- 
+   
+//---------------------------------------------MEMWB   
 MEMWB MEMWB(
-  .clk(),
-  .rst(),
-  .readdata_MEM(),
-  .alu_MEM(), 
-  .rd_MEM(), 
-  .memtoreg_MEM(), 
-  .regwrite_MEM(), 
-  .readdata_WB(), 
-  .alu_WB(),
-  .rd_WB(),
-  .memtoreg_WB(), 
-  .regwrite_WB()
+  .clk(clk),
+  .rst(rst),
+  .readdata_MEM(Read_data),
+  .alu_MEM(alu_MEM), 
+  .rd_MEM(rd_MEM), 
+  .memtoreg_MEM(memtoreg_MEM), 
+  .regwrite_MEM(memwrite_MEM), 
+  .readdata_WB(readdata_WB), 
+  .alu_WB(alu_WB),
+  .rd_WB(rd_WB),
+  .memtoreg_WB(memtoreg_WB), 
+  .regwrite_WB(regwrite_WB)
 );
   
  mux_2to1 mux4(
-    .in_0(),
-    .in_1(),
-    .sel(),
-    .out()
+    .in_0(readdata_WB),
+    .in_1(alu_WB),
+    .sel(memtoreg_WB),
+    .out(wb_data)
     );
-  
+
+//---------------------------------------------CTRL	
 controller controller(
-  .opcode(),
-  .stall(), 
- .branch(),
- .memread(),
- .memtoreg(),
- .memwrite(),
- .aluSrc(),
- .regwrite(),
- .Aluop()
+	 .opcode(opcode),
+	 .stall(stall), 
+	 .branch(Branch),
+	 .memread(Memread),
+	 .memtoreg(Memtoreg),
+	 .memwrite(Memwrite),
+	 .aluSrc(Alusrc),
+	 .regwrite(Regwrite),
+	 .Aluop(Aluop)
  );
   
-Branch_compare branch(
-    .operand1(), 
-    .operand2(), 
-    .func3(),    
-    .branch_taken()
-);
-    
-
 Forward Forward(
-   .RS1(), 
-   .RS2(), 
-   .rdMem(), 
-   .rdWb(), 
-    .regWrite_Wb(), 
-    .regWrite_Mem(), 
-    .Forward_A(),
-    .Forward_B()
+   .RS1(rs1_EX), 
+   .RS2(rs2_EX), 
+   .rdMem(rd_MEM), 
+   .rdWb(rd_WB), 
+   .regWrite_Wb(regwrite_WB), 
+   .regWrite_Mem(regwrite_MEM), 
+   .Forward_A(Forward_A),
+   .Forward_B(Forward_B)
 );
     
 Hazard Hazard( 
     .MEMr_IDEX(), 
     .ir(), 
     .rd_IDEX(), 
-    .stall() 
+    .stall(stall) 
 );	
 
 endmodule 
