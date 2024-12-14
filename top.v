@@ -1,6 +1,5 @@
 `include "mux.v"
 `include "memory.v"
-`include "SRAM.v"
 `include "imm.v"
 `include "Hazard.v"
 `include "Forward.v"
@@ -21,7 +20,7 @@
 
 module RISC_V(
   input clk,
-  input rst,
+  input rst
   );
   
 // ========================
