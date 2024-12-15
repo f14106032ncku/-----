@@ -19,15 +19,19 @@
 
 
 module RISC_V(
-  input clk,
-  input rst
+  input clk,rst,
+  input [31:0] ir,
+  input [31:0] readdata_MEM,
+  output [31:0] pc_out,
+  output [31:0] alu_MEM,
+  output [31:0] writedata_MEM
   );
   
 // ========================
 // 定義模組間的連接訊號
 // ========================
 // Fetch 模組訊號
-wire [31:0] ir_out, pc_out;
+wire [31:0] ir_IF;
 
 // IFID 模組訊號
 wire [31:0] ir_ID, addrout1;
@@ -86,7 +90,7 @@ wire Branch, Memread, Memtoreg, Memwrite, Alusrc, Regwrite;
 wire [1:0] Aluop;
 wire flush;
 
-assign flush =branch_taken_MEM &non_operation ;
+assign flush = branch_taken_MEM & non_operation ;
 
 // WB 模組訊號
 
@@ -95,22 +99,33 @@ wire [31:0] wb_data;
 //Hazard 模組訊號
 wire stall;
 
- 
-  fetch fecth (
+//---------------------------------------------IF
+mux_2to1 muxpc(
+    .in_0(pc_adder_out),
+    .in_1(pc_branch_MEM),
+    .sel(branch_taken_MEM),
+    .out(pc_in)
+    );  
+
+adder pc_adder(
+    .a(pc_out),
+    .b(32'd4),
+    .sum(pc_adder_out)
+    );
+
+pc pc(
     .clk(clk),
     .rst(rst),
     .stall(stall),
-    .wb(flush),
-    .pc_addr(pc_branch_EX),//???
-	.ir_out(ir_out),
-	.pc_out(pc_out)
-  );
-  
+    .pc_in(pc_in),
+    .pc_out(pc_out)
+    );
+
 //---------------------------------------------IFID 
   IFID IFID (
     .clk(clk),
     .rst(rst),
-    .ir_IF(ir_out),          
+    .ir_IF(ir_IF),          
     .pc_IF(pc_out),          
     .flush(flush),                
     .hazard_ifid(stall),          

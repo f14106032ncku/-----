@@ -12,12 +12,34 @@
 
 module tb();
   reg clk, rst;
-  
-  RISC_V CPU1
-  (
+  wire [31:0] ir, readdata_MEM, pc_out, alu_MEM, writedata_MEM;
+
+  RISC_V CPU1(
     .clk(clk),
-    .rst(rst)
+    .rst(rst),
+    .ir(ir),
+    .readdata_MEM(readdata_MEM),
+    .pc_out(pc_out),
+    .alu_MEM(alu_MEM),
+    .writedata_MEM(writedata_MEM)
   );
+
+  mem irmem(
+	  .clk(clk),
+    .wen(1'b0),
+    .addr(pc_out),
+	  .wdata(),
+    .rdata(ir)
+  );
+
+  mem datamem(
+	  .clk(clk),
+    .wen(memread_MEM),
+    .addr(alu_MEM),
+	  .wdata(writedata_MEM),
+    .rdata(Read_data)
+  );
+
   // Annotate timing information for synthesis
   `ifdef SYN
     initial $sdf_annotate("top_syn.sdf", CPU);
