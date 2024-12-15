@@ -34,7 +34,7 @@ module RISC_V(
 wire [31:0] ir_IF;
 
 // IFID 模組訊號
-wire [31:0] ir_ID, addrout1;
+wire [31:0] ir_ID, pc_ID;
 
 // Decoder 模組訊號
 wire [4:0] rs1, rs2, rd;
@@ -130,7 +130,7 @@ pc pc(
     .flush(flush),                
     .hazard_ifid(stall),          
     .ir_ID(ir_ID),   
-    .pc_ID(addrout1)        
+    .pc_ID(pc_ID)        
 );
   
   
@@ -171,7 +171,7 @@ IDEX IDEX (
     .opcode_ID(opcode),       
     .fun3_ID(funct3),         
     .fun7_ID(funct7),         
-    .pc_ID(adderout1),        
+    .pc_ID(pc_ID),        
     .readdata1_ID(rdata1),    
     .readdata2_ID(rdata2),    
     .imm_data_ID(imm_data),   
@@ -270,7 +270,8 @@ EXMEM EXMEM(
   .regwrite_MEM(regwrite_MEM),
   .branch_taken_MEM(branch_taken_MEM)
   );
-  
+
+  /*
   mem data_mem(
 	.clk(clk),
     .wen(memread_MEM),
@@ -278,7 +279,8 @@ EXMEM EXMEM(
 	.wdata(writedata_MEM),
     .rdata(Read_data)
     );
-   
+  */
+
 //---------------------------------------------MEMWB   
 MEMWB MEMWB(
   .clk(clk),
