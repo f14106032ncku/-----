@@ -233,7 +233,7 @@ adder add1(
     );
  
 ALU ALU(
-    .opcode(Aluop),
+    .opcode(opcode_EX),
     .func3(fun3_EX),
     .func7(fun7_EX),
     .operand1(M1),
