@@ -65,7 +65,7 @@ wire [31:0] M1,M2,alu_b;
 // EXMEM 模組訊號
 wire [31:0] pc_branch_MEM;
 wire zero_MEM;
-wire [31:0] alu_MEM;
+wire [31:0] alu_mem;
 wire [31:0] writedata_MEM;
 wire [4:0] rd_MEM;
 wire branch_MEM,memread_MEM,memtoreg_MEM, memwrite_MEM, regwrite_MEM;
@@ -206,7 +206,7 @@ IDEX IDEX (
  mux_3to1 mux1(
     .in_0(readdata1_EX),
     .in_1(wb_data),
-	.in_2(alu_MEM),
+	.in_2(alu_mem),
     .sel(Forward_A),
     .out(M1)
     );
@@ -214,7 +214,7 @@ IDEX IDEX (
 	mux_3to1 mux2(
     .in_0(readdata2_EX),
     .in_1(wb_data),
-	.in_2(alu_MEM),
+	.in_2(alu_mem),
     .sel(Forward_B),
     .out(M2)
     );
@@ -260,7 +260,7 @@ EXMEM EXMEM(
   .branch_taken_EX(),
   .pc_branch_MEM(pc_branch_MEM),
   .zero_MEM(zero_MEM),
-  .alu_MEM(alu_MEM),
+  .alu_MEM(alu_mem),
   .writedata_MEM(writedata_MEM),
   .rd_MEM(rd_MEM),
   .branch_MEM(branch_MEM),
@@ -286,7 +286,7 @@ MEMWB MEMWB(
   .clk(clk),
   .rst(rst),
   .readdata_MEM(Read_data),
-  .alu_MEM(alu_MEM), 
+  .alu_MEM(alu_mem), 
   .rd_MEM(rd_MEM), 
   .memtoreg_MEM(memtoreg_MEM), 
   .regwrite_MEM(memwrite_MEM), 
