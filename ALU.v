@@ -13,7 +13,10 @@ module ALU (
         case (opcode)
             `OP_I:begin
                 case (func3)
-                    `ADDI_func3:alu_out = operand1 + operand2;
+                    `ADDI_func3:begin
+                        alu_out = operand1 + operand2;
+                        $display("ALU: ADDI_func3: %d + %d = %d", operand1, operand2, alu_out);
+                    end
                     `SLTI_func3:alu_out=($signed(operand1) < $signed(operand2))?32'b1:32'b0;
                     `SLTIU_func3:alu_out = (operand1 < operand2)?32'b1:32'b0;
                     `XORI_func3:alu_out = operand1 ^ operand2;
