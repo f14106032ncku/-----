@@ -1,4 +1,4 @@
-`include "const.svh"
+/*`include "const.svh"
 module Branch_compare (
     input [31:0] operand1, // First operand
     input [31:0] operand2, // Second operand
@@ -24,3 +24,4 @@ module Branch_compare (
                           1'b0; // Default case for undefined func3
 
 endmodule
+*/
