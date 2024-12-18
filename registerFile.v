@@ -8,37 +8,23 @@ module registerFile(
   input wen,
   output reg[31:0] rdata1,
   output reg[31:0] rdata2
-//  output [63:0] r8,
-//  output [63:0] r19,
-//  output [63:0] r20,
-//  output [63:0] r21,
-//  output [63:0] r22
 );
   // integer i;
   reg [31:0] registers [31:0];
-
-//  assign r8 = registers[8];
-//  assign r19 = registers[19];
-//  assign r20 = registers[20];
-//  assign r21 = registers[26];
-//  assign r22 = registers[27];
  
   always @ (*)
     begin
-//      if (reset)
-//        begin
-//          rdata1 = 32'd0;
-//          rdata2 = 32'd0;
-//        end
-//      else
-//        begin
           rdata1 = registers[rs1];
           rdata2 = registers[rs2];
-        end
-//    end
-  always@(negedge clk)
-    begin
-      if (wen == 1)
-        registers[rd] = wdata;
     end
+  always @(negedge clk) begin
+    // 當 wen = 1 且 rd != 0 時，才允許寫入
+    if (wen == 1 && rd != 0) begin
+      registers[rd] <= wdata;
+    end
+    else registers[rd] <= registers[rd];
+    // 無論如何，都要確保 r0 永遠為 0
+    registers[0] <= 32'b0;
+  end
+
 endmodule
