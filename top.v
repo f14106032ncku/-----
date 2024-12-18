@@ -1,4 +1,3 @@
-`include "mux.v"
 `include "memory.v"
 `include "imm.v"
 `include "Hazard.v"
