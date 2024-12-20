@@ -1,0 +1,5 @@
+*.vcd
+*.fsdb
+*.out
+data_memory.txt
+ir_memory.txt
