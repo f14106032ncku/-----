@@ -226,7 +226,7 @@ IDEX IDEX (
 	
 adder add1(
     .a(pc_EX),
-    .b(imm_data_EX<<1),
+    .b(imm_data_EX),
     .sum(pc_branch_EX)
     );
  
