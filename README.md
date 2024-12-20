@@ -6,7 +6,7 @@
 * 刪除pipeline_flush(flush跟branch一樣)
 * B type format
 <img width="541" alt="image" src="https://github.com/user-attachments/assets/0bbd965a-bad3-4ad8-8850-4da2a447d8ce" />
-
+* pc<=pc+1 沒有做imme shift left 1
 
 
 ---
