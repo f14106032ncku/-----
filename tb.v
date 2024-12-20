@@ -98,8 +98,8 @@ module tb();
   // Check CPU status
   always @(posedge clk) begin
     // Monitor signals at the rising edge of the clock
-    $display("Time: %0t | pc_IF: %d| datamem.rdata: %d| datamem.addr: %d| MEMWB.readdata_WB: %d| x5: %d| x6: %d| x7: %d | x8: %d ", 
-             $time, CPU1.IFID.pc_IF, datamem.rdata, datamem.addr, CPU1.MEMWB.readdata_WB, CPU1.regfile.registers[5], CPU1.regfile.registers[6], CPU1.regfile.registers[7], CPU1.regfile.registers[8]);
+    $display("Time: %0t | pc_in: %d|x5: %d| x6: %d| x7: %d ", 
+             $time, CPU1.pc.pc_in, CPU1.regfile.registers[5], CPU1.regfile.registers[6], CPU1.regfile.registers[7]);
 
 
      // $display("Time: %0t | pc_IF: %d| | OP1_: %d|OP2_: %d| IDEX.rs2_EX: %d|addr: %d| MEM[4]: %d,wen: %d| x5: %d| x6: %d| x7: %d | x8: %d ", 

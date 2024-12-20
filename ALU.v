@@ -70,7 +70,10 @@ module ALU (
             end
            `OP_B:begin
                 case(func3)
-                    `BEQ_func3:alu_out=(operand1 == operand2)?`TRUE:`FALSE;
+                    `BEQ_func3:begin
+                        alu_out=(operand1 == operand2)?`TRUE:`FALSE;
+                        $display("ALU: BEQ_func3: %d beq %d = %d", operand1, operand2, alu_out);
+                    end
                     `BNE_func3:alu_out=(operand1 == operand2)?`FALSE:`TRUE;
                     `BLT_func3:alu_out=($signed(operand1) <$signed(operand2))?`TRUE:`FALSE;  
                     `BGE_func3:alu_out=($signed(operand1) >=$signed(operand2))?`TRUE:`FALSE; 
