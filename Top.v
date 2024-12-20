@@ -46,7 +46,7 @@ wire [2:0] funct3;
 wire [31:0] rdata1, rdata2, imm_data;
 
 // IDEX 模組訊號
-wire [31:0] addrout2,addrout3, readdata1_EX, readdata2_EX;
+wire [31:0] pc_EX,pc_branch_EX, readdata1_EX, readdata2_EX;
 wire [4:0] rs1_EX;
 wire [4:0] rs2_EX;
 wire [4:0] rd_EX;
@@ -63,7 +63,7 @@ wire non_operation;
 wire [31:0] M1,M2,alu_b;
 
 // EXMEM 模組訊號
-wire [31:0] pc_branch_MEM, pc_branch_EX, alu_EX;
+wire [31:0] pc_branch_MEM, alu_EX;
 wire zero_MEM;
 wire [31:0] alu_MEM;
 assign alu_DMEM = alu_MEM;
@@ -183,7 +183,7 @@ IDEX IDEX (
     .alusrc_ID(Alusrc),       
     .regwrite_ID(Regwrite),   
     .flush(flush),     
-    .pc_EX(addrout2),        
+    .pc_EX(pc_EX),        
     .rs1_EX(rs1_EX),              
     .rs2_EX(rs2_EX),              
     .rd_EX(rd_EX),               
@@ -225,9 +225,9 @@ IDEX IDEX (
     );
 	
 adder add1(
-    .a(addrout2),
+    .a(pc_EX),
     .b(imm_data_EX<<1),
-    .sum(addrout3)
+    .sum(pc_branch_EX)
     );
  
 ALU ALU(

@@ -105,8 +105,8 @@ module ALU (
             end
             `LUI:alu_out={operand2[31:12],12'b0};
             `AUIPC:alu_out=operand1+{operand2[31:12],12'b0};
-            `JAL:alu_out=operand1+32'd4;
-            `JALR:alu_out=operand1+32'd4;
+            `JAL:alu_out=operand1+32'd1;
+            `JALR:alu_out=operand1+32'd1;
             default:begin  
                 alu_out=32'b0;
             end
