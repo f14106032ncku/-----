@@ -13,10 +13,7 @@ module ALU (
         case (opcode)
             `OP_I:begin
                 case (func3)
-                    `ADDI_func3:begin
-                        alu_out = operand1 + operand2;
-                        $display("ALU: ADDI_func3: %d + %d = %d", operand1, operand2, alu_out);
-                    end
+                    `ADDI_func3:alu_out = operand1 + operand2;
                     `SLTI_func3:alu_out=($signed(operand1) < $signed(operand2))?32'b1:32'b0;
                     `SLTIU_func3:alu_out = (operand1 < operand2)?32'b1:32'b0;
                     `XORI_func3:alu_out = operand1 ^ operand2;
@@ -75,10 +72,7 @@ module ALU (
                     end
                     `BNE_func3:alu_out=(operand1 == operand2)?`FALSE:`TRUE;
                     `BLT_func3:alu_out=($signed(operand1) <$signed(operand2))?`TRUE:`FALSE;  
-                    `BGE_func3:begin
-                        alu_out=($signed(operand1) >=$signed(operand2))?`TRUE:`FALSE; 
-                        $display("ALU: BGE_func3: %d bge %d = %d", operand1, operand2, alu_out);
-                    end
+                    `BGE_func3:alu_out=($signed(operand1) >=$signed(operand2))?`TRUE:`FALSE; 
                     `BLTU_func3:alu_out=(operand1<operand2)?`TRUE:`FALSE;  
                     `BGEU_func3:alu_out=(operand1>=operand2)?`TRUE:`FALSE;
                     default:begin  
