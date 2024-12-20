@@ -88,7 +88,7 @@ wire Branch, Memread, Memtoreg, memwrite, Alusrc, Regwrite;
 wire [1:0] Aluop;
 wire flush;
 
-assign flush = branch_MEM & non_operation ;
+assign flush = branch_MEM & zero_MEM ;
 
 // WB 模組訊號
 
