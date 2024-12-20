@@ -5,10 +5,8 @@
 * 刪除ALU_controll(ALU控制訊號直接送opcode, fun3, fun7)
 * 刪除pipeline_flush(flush跟branch一樣)
 * B type format
-* | 31          | 30            25| 24   20 | 19   15 | 14      12 | 11          08 |07          | 06     00 |
-* +-------------+-----------------+---------+---------+------------+----------------+------------+-----------+
-* |  offset[11] |   offset[9:4]   |   rs2   |   rs1   |   funct3   |   offset[3:0]  | offset[10] |  opcode   |
-* +-------------+-----------------+---------+---------+------------+----------------+------------+-----------+
+<img width="541" alt="image" src="https://github.com/user-attachments/assets/0bbd965a-bad3-4ad8-8850-4da2a447d8ce" />
+
 
 
 ---
