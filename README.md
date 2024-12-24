@@ -1,7 +1,9 @@
 ## 架構圖
 
 ![image](https://github.com/f14106032ncku/CPU_vsd_2024/blob/main/architecture_ref.png)
+
 #### 不同的地方
+![image](https://github.com/user-attachments/assets/0c47aef6-cfe4-4cca-bf1f-53d5c75c8d92)
 * 刪除ALU_controll(ALU控制訊號直接送opcode, fun3, fun7)
 * 刪除pipeline_flush(flush跟branch一樣)
 * B type format
