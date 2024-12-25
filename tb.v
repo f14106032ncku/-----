@@ -13,6 +13,8 @@
   `include "Decoder.v"
   `include "adder.v"
   `include "Controller.v"
+  `include "NextPC.v"
+  `include "branch_prediction.v"
   `include "Branch_compare.v"
   //`include "fetch.v"
   `include "Top.v"
@@ -98,8 +100,8 @@ module tb();
   // Check CPU status
   always @(posedge clk) begin
     // Monitor signals at the rising edge of the clock
-    $display("Time: %0t | pc_in: %d| x5: %d| x6: %d| x7: %d ", 
-             $time, CPU1.pc.pc_in, CPU1.regfile.registers[5], CPU1.regfile.registers[6], CPU1.regfile.registers[7]);
+    $display("Time: %0t | pc_in: %d| taken_MEM: %d| stall: %d| nextpc: %d| taken: %d| x5: %d| x6: %d| x7: %d ", 
+             $time, CPU1.muxpc.out, CPU1.Hazard.taken_MEM, CPU1.Hazard.stall, CPU1.NextPC.nextpc, CPU1.NextPC.taken, CPU1.regfile.registers[5], CPU1.regfile.registers[6], CPU1.regfile.registers[7]);
 
 
      // $display("Time: %0t | pc_IF: %d| | OP1_: %d|OP2_: %d| IDEX.rs2_EX: %d|addr: %d| MEM[4]: %d,wen: %d| x5: %d| x6: %d| x7: %d | x8: %d ", 

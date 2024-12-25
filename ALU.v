@@ -3,6 +3,7 @@ module ALU (
     input [6:0] opcode,
     input [2:0] func3,
     input [6:0] func7,
+    input [31:0] pc,
     input [31:0] operand1,
     input [31:0] operand2,
     output reg [31:0] alu_out,
@@ -72,7 +73,11 @@ module ALU (
                     end
                     `BNE_func3:alu_out=(operand1 == operand2)?`FALSE:`TRUE;
                     `BLT_func3:alu_out=($signed(operand1) <$signed(operand2))?`TRUE:`FALSE;  
-                    `BGE_func3:alu_out=($signed(operand1) >=$signed(operand2))?`TRUE:`FALSE; 
+                    `BGE_func3:begin                    
+                        alu_out=($signed(operand1) >=$signed(operand2))?`TRUE:`FALSE;
+                        //$display("Time = %0t: operand1 = %0d, operand2 = %0d, alu_out = %b", $time, $signed(operand1), $signed(operand2), alu_out);
+                    end
+ 
                     `BLTU_func3:alu_out=(operand1<operand2)?`TRUE:`FALSE;  
                     `BGEU_func3:alu_out=(operand1>=operand2)?`TRUE:`FALSE;
                     default:begin  
@@ -104,8 +109,8 @@ module ALU (
             end
             `LUI:alu_out={operand2[31:12],12'b0};
             `AUIPC:alu_out=operand1+{operand2[31:12],12'b0};
-            `JAL:alu_out=operand1+32'd1;
-            `JALR:alu_out=operand1+32'd1;
+            `JAL:alu_out=pc+1;
+            `JALR:alu_out=pc+1;
             default:begin  
                 alu_out=32'b0;
             end

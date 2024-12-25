@@ -6,7 +6,7 @@ module pc(
 
     always @(posedge clk) begin
         if(rst) pc_out <= 0; 
-        else if(stall) pc_out <= pc_out; // pc stall
+        //else if(stall) pc_out <= pc_out; // pc stall
 		else pc_out <= pc_in;
     end
 

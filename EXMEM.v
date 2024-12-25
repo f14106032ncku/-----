@@ -6,7 +6,7 @@ module EXMEM(
   input non_operation,//64bit alu output
   input [31:0] writedata_EX, //2 bit mux2by1 output
   input [4:0] rd_EX, //IDEX output
-  input branch_EX,memread_EX,memtoreg_EX,memwrite_EX,regwrite_EX, //IDEXX outputs
+  input branch_EX,memread_EX,memtoreg_EX,memwrite_EX,regwrite_EX,taken, //IDEXX outputs
   input flush, 
   input branch_taken_EX,
   output reg [31:0] pc_branch_MEM,
@@ -14,7 +14,7 @@ module EXMEM(
   output reg [31:0] alu_MEM,
   output reg [31:0] writedata_MEM,
   output reg [4:0] rd_MEM,
-  output reg branch_MEM,memread_MEM,memtoreg_MEM, memwrite_MEM, regwrite_MEM,
+  output reg branch_MEM,memread_MEM,memtoreg_MEM, memwrite_MEM, regwrite_MEM,taken_MEM,
   output reg branch_taken_MEM);
   
   always @ (posedge clk)
@@ -32,6 +32,7 @@ module EXMEM(
           memwrite_MEM <= 1'b0;
           regwrite_MEM <= 1'b0;
           branch_taken_MEM <= 1'b0;
+          taken_MEM <= 1'b0;
         end
       else
         begin
@@ -45,7 +46,8 @@ module EXMEM(
           memtoreg_MEM <= memtoreg_EX;
           memwrite_MEM <= memwrite_EX;
           regwrite_MEM <= regwrite_EX;
-          branch_taken_MEM = branch_taken_EX;
+          branch_taken_MEM <= branch_taken_EX;
+          taken_MEM <= taken;
         end
     end
 endmodule

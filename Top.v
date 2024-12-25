@@ -17,7 +17,7 @@
 `include "MEMWB.v"
 `include "const.svh"
 */
-
+`include "const.svh"
 module Top(
   input clk,rst,
   input [31:0] ir,
@@ -64,31 +64,43 @@ wire [31:0] M1,M2,alu_b;
 
 // EXMEM 模組訊號
 wire [31:0] pc_branch_MEM, alu_EX;
-wire zero_MEM;
+wire zero_MEM,flush_EX;
 wire [31:0] alu_MEM;
 assign alu_DMEM = alu_MEM;
 wire [31:0] writedata_MEM;
 assign writedata_DMEM = writedata_MEM;
 wire [4:0] rd_MEM;
-wire branch_MEM,memread_MEM,memtoreg_MEM,  regwrite_MEM;
+wire branch_MEM,memread_MEM,memtoreg_MEM, regwrite_MEM;
 
 // MEMWB 模組訊號
 wire [31:0] readdata_WB; 
 wire [31:0] alu_WB;
 wire [4:0] rd_WB;
 wire memtoreg_WB, regwrite_WB;
+wire taken_MEM;
+
+// Branch prediction
+wire [31:0] pc_BP;
+wire [1:0] pc_sel; // 0 : pc+1 | 1 : pc_branch_MEM | 2 : pc_BP
+wire BP_update, taken, BP_taken, branch_predict;
+
 
 // FORWORD 模組訊號
 wire [1:0] Forward_A;
 wire [1:0] Forward_B;
 
 // 控制訊號
-wire branch_final;
+//wire branch_final;
 wire Branch, Memread, Memtoreg, memwrite, Alusrc, Regwrite;  
-wire [1:0] Aluop;
-wire flush;
+// wire [1:0] Aluop;
 
-assign flush = branch_MEM & (~zero_MEM) ;
+// Hazard
+wire flush_MEM;
+wire flush_IFID, flush_IDEX, flush_EXMEM;
+wire BP_ID;
+
+assign BP_ID = branch_predict && Branch;                 
+// assign flush_MEM = branch_MEM & (~zero_MEM) ;
 
 // WB 模組訊號
 
@@ -98,10 +110,12 @@ wire [31:0] wb_data;
 wire stall;
 
 //---------------------------------------------IF
-mux_2to1 muxpc(
+mux_4to1 muxpc(
     .in_0(pc_adder_out),
     .in_1(pc_branch_MEM),
-    .sel(flush),
+    .in_2(pc_BP),
+    .in_3(pc_out),
+    .sel(pc_sel),
     .out(pc_in)
     );  
 
@@ -114,25 +128,25 @@ adder pc_adder(
 pc pc(
     .clk(clk),
     .rst(rst),
-    .stall(stall),
+    //.stall(stall),
     .pc_in(pc_in),
     .pc_out(pc_out)
     );
 
 //---------------------------------------------IFID 
-  IFID IFID (
+IFID IFID (
     .clk(clk),
     .rst(rst),
     .ir_IF(ir),          
     .pc_IF(pc_out),          
-    .flush(flush),                
+    .flush(flush_IFID),                
     .hazard_ifid(stall),          
     .ir_ID(ir_ID),   
     .pc_ID(pc_ID)        
 );
   
   
- Decoder Decoder (
+Decoder Decoder (
     .ir(ir_ID),      
     .rs1(rs1),               
     .rs2(rs2),               
@@ -141,7 +155,20 @@ pc pc(
     .fun3(funct3),           
     .fun7(funct7)            
 );
- 
+
+branch_prediction branch_prediction (
+    .clk(clk),            
+    .rst(rst),             
+    .update(BP_update),        
+    .taken(BP_taken),    
+    .branch_predict(branch_predict)
+); 
+
+adder BP_adder(
+    .a(pc_ID),
+    .b(imm_data),
+    .sum(pc_BP)
+    );
   
 registerFile regfile (
     .clk(clk),
@@ -182,7 +209,8 @@ IDEX IDEX (
     .memwrite_ID(memwrite),   
     .alusrc_ID(Alusrc),       
     .regwrite_ID(Regwrite),   
-    .flush(flush),     
+    .flush(flush_IDEX), 
+    .BP_ID(BP_ID),    
     .pc_EX(pc_EX),        
     .rs1_EX(rs1_EX),              
     .rs2_EX(rs2_EX),              
@@ -198,7 +226,8 @@ IDEX IDEX (
     .memtoreg_EX(memtoreg_EX),           
     .memwrite_EX(memwrite_EX),           
     .regwrite_EX(regwrite_EX),           
-    .alusrc_EX(alusrc_EX)              
+    .alusrc_EX(alusrc_EX),
+    .BP_EX(BP_EX)                  
 );
 
  mux_3to1 mux1(
@@ -223,17 +252,33 @@ IDEX IDEX (
     .sel(alusrc_EX),
     .out(alu_b)
     );
-	
+
+/*	
 adder add1(
     .a(pc_EX),
     .b(imm_data_EX),
     .sum(pc_branch_EX)
     );
- 
+*/ 
+
+NextPC NextPC (
+    .BP_EX(BP_EX),
+    .opcode(opcode_EX),
+    .operand1(M1),    
+    .alu_result(alu_EX),
+    .pc(pc_EX),
+    .imm(imm_data_EX),
+    .BP_update(BP_update),
+    .BP_taken(BP_taken),
+    .taken(taken),
+    .nextpc(pc_branch_EX)
+);
+
 ALU ALU(
     .opcode(opcode_EX),
     .func3(fun3_EX),
     .func7(fun7_EX),
+    .pc(pc_EX),    
     .operand1(M1),
     .operand2(alu_b),
     .alu_out(alu_EX),
@@ -254,7 +299,9 @@ EXMEM EXMEM(
   .memtoreg_EX(memtoreg_EX),
   .memwrite_EX(memwrite_EX),
   .regwrite_EX(regwrite_EX),
-  .flush(flush), 
+  .taken(taken),
+  .flush(flush_EXMEM),
+  .taken_MEM(taken_MEM), 
   .branch_taken_EX(),
   .pc_branch_MEM(pc_branch_MEM),
   .zero_MEM(zero_MEM),
@@ -295,7 +342,7 @@ MEMWB MEMWB(
   .regwrite_WB(regwrite_WB)
 );
   
- mux_2to1 mux4(
+mux_2to1 mux4(
     .in_0(alu_WB),
     .in_1(readdata_WB),
     .sel(memtoreg_WB),
@@ -312,7 +359,7 @@ controller controller(
 	 .memwrite(memwrite),
 	 .aluSrc(Alusrc),
 	 .regwrite(Regwrite),
-	 .Aluop(Aluop)
+	 .Aluop()
  );
   
 Forward Forward(
@@ -329,7 +376,13 @@ Forward Forward(
 Hazard Hazard( 
     .memread_EX(memread_EX),  
     .ir_ID(ir_ID),     
-    .rd_EX(rd_EX),                  
+    .rd_EX(rd_EX),  
+    .taken_MEM(taken_MEM), 
+    .BP_ID(BP_ID),
+    .flush_IFID(flush_IFID),    
+    .flush_IDEX(flush_IDEX),     
+    .flush_EXMEM(flush_EXMEM), 
+    .pc_sel(pc_sel),                   
     .stall(stall)            
 );	
 
