@@ -1,9 +1,10 @@
 `include "const.svh"
 module controller(
   input [6:0] opcode,
-  input stall, 
-  
-  output reg branch,
+  input stall,
+  input branch_predict,  
+
+  output reg BP_ID,
   output reg memread,
   output reg memtoreg,
   output reg memwrite,
@@ -11,6 +12,9 @@ module controller(
   output reg regwrite,
   output reg [1:0] Aluop);
   
+ reg branch ;
+ 
+
   always @(*)
     begin
       if (stall) begin
@@ -97,5 +101,6 @@ module controller(
           end
         endcase
       end
+         BP_ID = branch & branch_predict;
     end
 endmodule
