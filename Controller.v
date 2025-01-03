@@ -5,9 +5,9 @@ module controller(
   input branch_predict,  
 
   output reg BP_ID,
-  output reg memread,
+  output reg memread, //Load
   output reg memtoreg,
-  output reg memwrite,
+  output reg memwrite, //Store
   output reg aluSrc,
   output reg regwrite,
   output reg [1:0] Aluop);

@@ -28,6 +28,7 @@
   `include "pc.v"
   `include "registerFile.v"
   `include "MEMWB.v"
+  `include "LSFilter.v"
 
   `include "const.svh"
 `endif

@@ -39,7 +39,7 @@ module IDEX(
           readdata1_EX <= 31'b0;
           readdata2_EX <= 31'b0;
           opcode_EX <= 7'b0;
-          fun3_EX <= 4'b0;    
+          fun3_EX <= 3'b0;    
           fun7_EX <= 7'b0;                 
           branch_EX <= 1'b0;
           memread_EX <= 1'b0;

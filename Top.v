@@ -55,6 +55,9 @@ wire branch_MEM,memread_MEM,memtoreg_MEM, regwrite_MEM;
 wire [31:0] readdata_WB; 
 wire [31:0] alu_WB;
 wire [4:0] rd_WB;
+wire [2:0] fun3_MEM;
+wire [31:0] writedata_MEM;
+wire [31:0] readdata_F_MEM;
 wire memtoreg_WB, regwrite_WB;
 wire taken_MEM;
 
@@ -258,26 +261,37 @@ EXMEM EXMEM(
   .flush(flush_EXMEM),
   .taken_MEM(taken_MEM), 
   .branch_taken_EX(),
+  .fun3_EX(fun3_EX),  
   .pc_branch_MEM(pc_branch_MEM),
   .zero_MEM(zero_MEM),
-  .alu_MEM(alu_DMEM), // output
-  .writedata_MEM(writedata_DMEM),
+  .alu_MEM(alu_DMEM), 
+  .writedata_MEM(writedata_MEM),
   .rd_MEM(rd_MEM),
   .branch_MEM(branch_MEM),
   .memread_MEM(memread_MEM),
   .memtoreg_MEM(memtoreg_MEM),
   .memwrite_MEM(memwrite_MEM), 
   .regwrite_MEM(regwrite_MEM),
-  .branch_taken_MEM()
+  .branch_taken_MEM(),
+  .fun3_MEM(fun3_MEM)  
   );
 
+LSFilter LSFilter (
+    .memread_MEM(memread_MEM),
+    .memwrite_MEM(memwrite_MEM),
+    .fun3_MEM(fun3_MEM),
+    .writedata_MEM(writedata_MEM),
+    .readdata_MEM(readdata_MEM),
+    .writedata_F_MEM(writedata_DMEM), // output
+    .readdata_F_MEM(readdata_F_MEM)
+);
  
 
 //---------------------------------------------MEMWB   
 MEMWB MEMWB(
   .clk(clk),
   .rst(rst),
-  .readdata_MEM(readdata_MEM),
+  .readdata_MEM(readdata_F_MEM),
   .alu_MEM(alu_DMEM), //input
   .rd_MEM(rd_MEM), 
   .memtoreg_MEM(memtoreg_MEM), 
