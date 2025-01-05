@@ -59,9 +59,9 @@ endmodule
         .memwrite_MEM(memwrite_MEM),
         .fun3_MEM(fun3_MEM),
         .writedata_MEM(writedata_MEM),
-        .alu_MEM(alu_MEM),
-        .writedata_F_MEM(writedata_F_MEM),
-        .alu_F_MEM(alu_F_MEM)
+        .readdata_MEM(readdata_MEM),
+        .writedata_F_MEM(writedata_DMEM),
+        .readdata_F_MEM(readdata_F_MEM)
     );
     */
 
