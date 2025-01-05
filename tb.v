@@ -100,7 +100,7 @@ module tb();
   always #5 clk = ~clk;
 
   // Check CPU status
-/*
+
   always @(posedge clk) begin
     // Monitor signals at the rising edge of the clock
     $display("Time: %0t | pc_in: %d| taken_MEM: %d| stall: %d| nextpc: %d| taken: %d| x5: %d| x6: %d| x10: %d| x11: %d| x13: %d ", 
@@ -111,5 +111,5 @@ module tb();
         //     $time, CPU1.IFID.pc_IF, CPU1.ALU.operand1, CPU1.ALU.operand2,CPU1.IDEX.rs2_EX, datamem.addr, datamem.mem[4], datamem.wen, CPU1.regfile.registers[5], CPU1.regfile.registers[6], CPU1.regfile.registers[7], CPU1.regfile.registers[8]);
   //$display("Time: %0t | pc_IF: %d|control %d |IDEX_memwrite: %d| EXMEM_memwrite: %d,datamem.wen: %d", 
            //  $time, CPU1.IFID.pc_IF,CPU1.controller.memwrite,CPU1.IDEX.memwrite_EX,CPU1.EXMEM.memwrite_MEM, datamem.wen);
-  end*/
+  end
 endmodule
