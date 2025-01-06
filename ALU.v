@@ -72,10 +72,13 @@ module ALU (
                         alu_out=(operand1 == operand2)?`TRUE:`FALSE;
                     end
                     `BNE_func3:alu_out=(operand1 == operand2)?`FALSE:`TRUE;
-                    `BLT_func3:alu_out=($signed(operand1) <$signed(operand2))?`TRUE:`FALSE;  
+                    `BLT_func3:begin                    
+                        alu_out=($signed(operand1) <$signed(operand2))?`TRUE:`FALSE;
+                        //$display("BLT: operand1 = %0d, operand2 = %0d, alu_out = %b", $signed(operand1), $signed(operand2), alu_out);
+                    end                      
                     `BGE_func3:begin                    
                         alu_out=($signed(operand1) >=$signed(operand2))?`TRUE:`FALSE;
-                        //$display("Time = %0t: operand1 = %0d, operand2 = %0d, alu_out = %b", $time, $signed(operand1), $signed(operand2), alu_out);
+                        //$display("BGE: operand1 = %0d, operand2 = %0d, alu_out = %b", $signed(operand1), $signed(operand2), alu_out);
                     end
  
                     `BLTU_func3:alu_out=(operand1<operand2)?`TRUE:`FALSE;  

@@ -78,7 +78,7 @@ module tb();
     clk = 1'b1;
     rst = 1'b1; 
     #10 rst = 1'b0; // Release reset after 10 time units
-    #1000 
+    #3000 
     $writememb("ir_memory.txt",irmem.mem);
     $writememb("data_memory.txt", datamem.mem);
     $finish;
@@ -87,7 +87,7 @@ module tb();
   // read prog to mem
   initial begin : prog_load
     // Load program instructions into memory
-    $readmemb("./test/fibonacci.txt", irmem.mem);     
+    $readmemb("./test/irtest.txt", irmem.mem);     
   end
 
   // Dump waveform for debugging
@@ -103,8 +103,9 @@ module tb();
 
   always @(posedge clk) begin
     // Monitor signals at the rising edge of the clock
-    $display("Time: %0t | pc_in: %d| taken_MEM: %d| stall: %d| nextpc: %d| taken: %d| x5: %d| x6: %d| x10: %d| x11: %d| x13: %d ", 
-             $time, CPU1.muxpc.out, CPU1.Hazard.taken_MEM, CPU1.Hazard.stall, CPU1.NextPC.nextpc, CPU1.NextPC.taken, CPU1.regfile.registers[5],CPU1.regfile.registers[6],CPU1.regfile.registers[10], CPU1.regfile.registers[11], CPU1.regfile.registers[13]);
+    $display("Time: %0t | pc_out: %0d | x5: %0d | x6: %0d | x1: %0d | x2: %0d | x3: %0d | x7: %0d | m0: %0d | m1: %0d | m2: %0d | m3: %0d | m4: %0d", 
+             $time, CPU1.pc_out, CPU1.regfile.registers[5], CPU1.regfile.registers[6], CPU1.regfile.registers[1], CPU1.regfile.registers[2], CPU1.regfile.registers[3], CPU1.regfile.registers[7], 
+             datamem.mem[0], datamem.mem[1], datamem.mem[2], datamem.mem[3], datamem.mem[4]);
 
 
      // $display("Time: %0t | pc_IF: %d| | OP1_: %d|OP2_: %d| IDEX.rs2_EX: %d|addr: %d| MEM[4]: %d,wen: %d| x5: %d| x6: %d| x7: %d | x8: %d ", 

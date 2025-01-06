@@ -312,16 +312,16 @@ mux_2to1 mux4(
 
 //---------------------------------------------CTRL	
 controller controller(
-	 .opcode(opcode),
-	 .stall(stall),
-        .branch_predict(branch_predict), 
-	 .BP_ID(BP_ID),
-	 .memread(Memread),
-	 .memtoreg(Memtoreg),
-	 .memwrite(memwrite),
-	 .aluSrc(Alusrc),
-	 .regwrite(Regwrite),
-	 .Aluop()
+    .opcode(opcode),
+    .stall(stall),
+    .branch_predict(branch_predict), 
+    .BP_ID(BP_ID),
+    .memread(Memread),
+    .memtoreg(Memtoreg),
+    .memwrite(memwrite),
+    .aluSrc(Alusrc),
+    .regwrite(Regwrite),
+    .Aluop()
  );
   
 Forward Forward(
