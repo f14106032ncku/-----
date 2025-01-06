@@ -1,9 +1,10 @@
 `include "const.svh"
 module controller(
   input [6:0] opcode,
-  input stall, 
-  
-  output reg branch,
+  input stall,
+  input branch_predict,  
+
+  output reg BP_ID,
   output reg memread,
   output reg memtoreg,
   output reg memwrite,
@@ -11,6 +12,9 @@ module controller(
   output reg regwrite,
   output reg [1:0] Aluop);
   
+ reg branch ;
+ 
+
   always @(*)
     begin
       if (stall) begin
@@ -68,6 +72,24 @@ module controller(
             branch = 1'b0;
             Aluop = 2'b00;
           end
+          `JAL: begin // 7'b1101111
+            aluSrc = 1'b0;
+            memtoreg = 1'b0; // Write return address (alu_out = pc + 1) to rd
+            regwrite = 1'b1;
+            memread = 1'b0;
+            memwrite = 1'b0;
+            branch = 1'b1; // Jumps always involve a branch
+            Aluop = 2'b00;
+          end
+          `JALR: begin // 7'b1100111 
+            aluSrc = 1'b1; // JALR involves a register + immediate computation
+            memtoreg = 1'b0; // Write return address (alu_out = pc + 1) to rd
+            regwrite = 1'b1;
+            memread = 1'b0;
+            memwrite = 1'b0;
+            branch = 1'b1; // JALR also involves a jump (branch)
+            Aluop = 2'b00;
+          end
           default: begin
             aluSrc = 1'b0;
             memtoreg = 1'b0;
@@ -79,5 +101,6 @@ module controller(
           end
         endcase
       end
+         BP_ID = branch & branch_predict;
     end
 endmodule

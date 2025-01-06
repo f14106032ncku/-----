@@ -12,6 +12,8 @@ module IDEX(
   input [4:0] rd_ID, //from instruction parser
   input branch_ID,memread_ID,memtoreg_ID,memwrite_ID,alusrc_ID,regwrite_ID, //from control unit
   input flush, 
+  input BP_ID,  
+  output reg BP_EX,  
   output reg [31:0] pc_EX,
   output reg [4:0] rs1_EX,
   output reg [4:0] rs2_EX,
@@ -45,6 +47,7 @@ module IDEX(
           memwrite_EX <= 1'b0;
           regwrite_EX <= 1'b0;
           alusrc_EX <= 1'b0;
+          BP_EX <= 1'b0;          
         end
       else
         begin
@@ -63,7 +66,8 @@ module IDEX(
           memtoreg_EX <= memtoreg_ID;
           memwrite_EX <= memwrite_ID;
           regwrite_EX <= regwrite_ID;
-          alusrc_EX <= alusrc_ID;     
+          alusrc_EX <= alusrc_ID;
+          BP_EX <= BP_ID;               
         end
     end
 endmodule
